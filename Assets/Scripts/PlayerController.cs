@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Jump Variables")]
     public float jumpForce;
+    public bool doubleJump = true;
 
     [Header("Ground Check Variables")]
     public Transform groundCheckPoint;
@@ -77,11 +78,19 @@ public class PlayerController : MonoBehaviour
     {
         if(isGrounded)
             rigidbody.velocity = new Vector2(rigidbody.velocity.x, jumpForce * Time.deltaTime);
+        else if (doubleJump)
+        {
+            rigidbody.velocity = new Vector2(rigidbody.velocity.x, jumpForce * Time.deltaTime);
+            doubleJump = false;
+        }
     }
 
     void GroundCheck()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, radius, whatIsGround);
+
+        if (isGrounded)
+            doubleJump = true;
     }
 
     void FlipSprite()

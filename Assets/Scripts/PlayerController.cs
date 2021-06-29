@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Movement Variables")]
+    public Animator animator;
     Rigidbody2D rigidbody; //Para controlar el rigidbody que tiene nuestro personaje
     Vector2 input; //Asignar el movimiento tanto en el eje X como en el Y
 
@@ -27,6 +29,8 @@ public class PlayerController : MonoBehaviour
         //Con la variable rigidbody que creamos
         rigidbody = GetComponent<Rigidbody2D>();
 
+        animator = GetComponent<Animator>();
+
         //Para que mire hacia la derecha
         direction = 1;
         //Para que el sprite se rote y vea hacia la derecha.
@@ -47,13 +51,6 @@ public class PlayerController : MonoBehaviour
     //Esta función maneja el movimiento horizontal del personaje
     void Movement()
     {
-        //Este Vector2 contiene el movimiento horizontal del personaje que proviene de
-        //El input (presionar sea el botón A,D o flecha izquierda o derecha) que en este caso nos da valores
-        //entre -1 y 1 (-1,-0.9,-0.8,-0.7,... ,0.8,0.9,1)
-        //Multiplicado por movementSpeed, para que se mueva un poco más rápido
-        //Time.deltaTime nos da independencia en los frames para que nuestro juego se sienta
-        //Igual en cualquier computador
-        //rigidbody.velocity.y -> asigna la gravedad del objeto.
         input = new Vector2(Input.GetAxis("Horizontal") * movementSpeed * Time.deltaTime, rigidbody.velocity.y);
 
         //Si miras a la derecha, entonces asigna 1 a direction (le dices que mire hacia la derecha al sprite)
@@ -69,6 +66,8 @@ public class PlayerController : MonoBehaviour
             FlipSprite();
         }
 
+        animator.SetBool("isWalking", Mathf.Abs(input.x) > 0);
+
         //Rigidbody es un componente que hace que nuestro objeto sea afectado por físicas
         //En esta línea asignamos tanto la velocidad en el eje X, como en el eje Y
         rigidbody.velocity = input;
@@ -76,12 +75,16 @@ public class PlayerController : MonoBehaviour
 
     void Jump()
     {
-        if(isGrounded)
+        if (isGrounded)
+        {
             rigidbody.velocity = new Vector2(rigidbody.velocity.x, jumpForce * Time.deltaTime);
+            animator.SetBool("isGrounded", false);
+        }
         else if (doubleJump)
         {
             rigidbody.velocity = new Vector2(rigidbody.velocity.x, jumpForce * Time.deltaTime);
             doubleJump = false;
+            animator.SetBool("isGrounded", false);
         }
     }
 
@@ -90,7 +93,10 @@ public class PlayerController : MonoBehaviour
         isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, radius, whatIsGround);
 
         if (isGrounded)
+        {
             doubleJump = true;
+            animator.SetBool("isGrounded", true);
+        }
     }
 
     void FlipSprite()

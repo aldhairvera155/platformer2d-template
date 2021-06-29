@@ -5,9 +5,20 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     Rigidbody2D rigidbody; //Para controlar el rigidbody que tiene nuestro personaje
+    Vector2 input; //Asignar el movimiento tanto en el eje X como en el Y
+
+    [Header("Movement Variables")]
     public float movementSpeed; //Para darle una velocidad de movimiento mayor a 1 o -1 a nuestro personaje
     public int direction; //Para asignar a donde mira nuestro personaje
-    public Vector2 input; //Asignar el movimiento tanto en el eje X como en el Y
+
+    [Header("Jump Variables")]
+    public float jumpForce;
+
+    [Header("Ground Check Variables")]
+    public Transform groundCheckPoint;
+    public float radius;
+    public LayerMask whatIsGround;
+    bool isGrounded;
 
     void Start()
     {
@@ -25,6 +36,11 @@ public class PlayerController : MonoBehaviour
     {
         //Llamamos a la función Movement, si no esta en un update, no va a ejecutarse
         Movement();
+
+        GroundCheck();
+
+        if (Input.GetKeyDown(KeyCode.Space))
+            Jump();
     }
 
     //Esta función maneja el movimiento horizontal del personaje
@@ -55,6 +71,17 @@ public class PlayerController : MonoBehaviour
         //Rigidbody es un componente que hace que nuestro objeto sea afectado por físicas
         //En esta línea asignamos tanto la velocidad en el eje X, como en el eje Y
         rigidbody.velocity = input;
+    }
+
+    void Jump()
+    {
+        if(isGrounded)
+            rigidbody.velocity = new Vector2(rigidbody.velocity.x, jumpForce * Time.deltaTime);
+    }
+
+    void GroundCheck()
+    {
+        isGrounded = Physics2D.OverlapCircle(groundCheckPoint.position, radius, whatIsGround);
     }
 
     void FlipSprite()

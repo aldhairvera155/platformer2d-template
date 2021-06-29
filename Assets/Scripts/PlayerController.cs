@@ -14,7 +14,10 @@ public class PlayerController : MonoBehaviour
         //Asigno el rigidbody que tiene nuestro componente, enlanzandolo
         //Con la variable rigidbody que creamos
         rigidbody = GetComponent<Rigidbody2D>();
+
+        //Para que mire hacia la derecha
         direction = 1;
+        //Para que el sprite se rote y vea hacia la derecha.
         FlipSprite();
     }
 
@@ -36,11 +39,13 @@ public class PlayerController : MonoBehaviour
         //rigidbody.velocity.y -> asigna la gravedad del objeto.
         input = new Vector2(Input.GetAxis("Horizontal") * movementSpeed * Time.deltaTime, rigidbody.velocity.y);
 
+        //Si miras a la derecha, entonces asigna 1 a direction (le dices que mire hacia la derecha al sprite)
         if (input.x > 0)
         {
             direction = 1;
             FlipSprite();
         }
+        //Si miras a la izquierda, entonces asigna -1 a direction (le dices que mire hacia la izquierda al sprite)
         else if (input.x < 0)
         {
             direction = -1;
